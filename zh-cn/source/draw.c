@@ -77,48 +77,48 @@ void init_screens(void)
 
     C2D_TextParse(&text[TEXT_VERSION], staticBuf, VERSION);
 
-    C2D_TextParse(&text[TEXT_THEME_MODE], staticBuf, "Theme mode");
-    C2D_TextParse(&text[TEXT_SPLASH_MODE], staticBuf, "Splash mode");
+    C2D_TextParse(&text[TEXT_THEME_MODE], staticBuf, "主题模式");
+    C2D_TextParse(&text[TEXT_SPLASH_MODE], staticBuf, "开机动画模式");
 
-    C2D_TextParse(&text[TEXT_NO_THEME_FOUND], staticBuf, "No theme found");
-    C2D_TextParse(&text[TEXT_NO_SPLASH_FOUND], staticBuf, "No splash found");
+    C2D_TextParse(&text[TEXT_NO_THEME_FOUND], staticBuf, "无主题");
+    C2D_TextParse(&text[TEXT_NO_SPLASH_FOUND], staticBuf, "无开机动画");
 
-    C2D_TextParse(&text[TEXT_DOWNLOAD_FROM_QR], staticBuf, "Press \uE005 to download from QR");
+    C2D_TextParse(&text[TEXT_DOWNLOAD_FROM_QR], staticBuf, "按 \uE005 通过二维码安装");
 
-    C2D_TextParse(&text[TEXT_SWITCH_TO_SPLASHES], staticBuf, "Or \uE004 to switch to splashes");
-    C2D_TextParse(&text[TEXT_SWITCH_TO_THEMES], staticBuf, "Or \uE004 to switch to themes");
+    C2D_TextParse(&text[TEXT_SWITCH_TO_SPLASHES], staticBuf, "按 \uE004 切换到开机画面界面");
+    C2D_TextParse(&text[TEXT_SWITCH_TO_THEMES], staticBuf, "按 \uE004 切换到主题界面");
 
-    C2D_TextParse(&text[TEXT_OR_START_TO_QUIT], staticBuf, "Or        to quit");
+    C2D_TextParse(&text[TEXT_OR_START_TO_QUIT], staticBuf, "        退出");
 
     C2D_TextParse(&text[TEXT_BY_AUTHOR], staticBuf, "By ");
     C2D_TextParse(&text[TEXT_SELECTED], staticBuf, "Selected:");
     C2D_TextParse(&text[TEXT_SELECTED_SHORT], staticBuf, "Sel.:");
 
-    C2D_TextParse(&text[TEXT_THEMEPLAZA_THEME_MODE], staticBuf, "ThemePlaza Theme mode");
-    C2D_TextParse(&text[TEXT_THEMEPLAZA_SPLASH_MODE], staticBuf, "ThemePlaza Splash mode");
+    C2D_TextParse(&text[TEXT_THEMEPLAZA_THEME_MODE], staticBuf, "主题广场 主题模式");
+    C2D_TextParse(&text[TEXT_THEMEPLAZA_SPLASH_MODE], staticBuf, "主题广场 开机动画模式");
 
-    C2D_TextParse(&text[TEXT_SEARCH], staticBuf, "Search...");
-    C2D_TextParse(&text[TEXT_PAGE], staticBuf, "Page:");
+    C2D_TextParse(&text[TEXT_SEARCH], staticBuf, "搜索...");
+    C2D_TextParse(&text[TEXT_PAGE], staticBuf, "页码:");
 
-    C2D_TextParse(&text[TEXT_ERROR_QUIT], staticBuf, "Press \uE000 to quit.");
-    C2D_TextParse(&text[TEXT_ERROR_CONTINUE], staticBuf, "Press \uE000 to continue.");
+    C2D_TextParse(&text[TEXT_ERROR_QUIT], staticBuf, "按 \uE000 退出");
+    C2D_TextParse(&text[TEXT_ERROR_CONTINUE], staticBuf, "按 \uE000 继续");
 
-    C2D_TextParse(&text[TEXT_CONFIRM_YES_NO], staticBuf, "\uE000 Yes   \uE001 No");
+    C2D_TextParse(&text[TEXT_CONFIRM_YES_NO], staticBuf, "\uE000 是   \uE001 否");
 
     C2D_TextParse(&text[TEXT_INSTALL_LOADING_THEMES], staticBuf, "Loading themes, please wait...");
     C2D_TextParse(&text[TEXT_INSTALL_LOADING_SPLASHES], staticBuf, "Loading splashes, please wait...");
     C2D_TextParse(&text[TEXT_INSTALL_LOADING_ICONS], staticBuf, "Loading icons, please wait...");
 
-    C2D_TextParse(&text[TEXT_INSTALL_SPLASH], staticBuf, "Installing a splash...");
-    C2D_TextParse(&text[TEXT_INSTALL_SPLASH_DELETE], staticBuf, "Deleting installed splash...");
+    C2D_TextParse(&text[TEXT_INSTALL_SPLASH], staticBuf, "正在安装开机动画中...");
+    C2D_TextParse(&text[TEXT_INSTALL_SPLASH_DELETE], staticBuf, "正在删除开机动画中...");
 
-    C2D_TextParse(&text[TEXT_INSTALL_SINGLE], staticBuf, "Installing a single theme...");
-    C2D_TextParse(&text[TEXT_INSTALL_SHUFFLE], staticBuf, "Installing shuffle themes...");
+    C2D_TextParse(&text[TEXT_INSTALL_SINGLE], staticBuf, "正在安装主题中...");
+    C2D_TextParse(&text[TEXT_INSTALL_SHUFFLE], staticBuf, "正在安装随机主题组中...");
     C2D_TextParse(&text[TEXT_INSTALL_BGM], staticBuf, "Installing BGM-only theme...");
     C2D_TextParse(&text[TEXT_INSTALL_NO_BGM], staticBuf, "Installing theme without BGM...");
 
-    C2D_TextParse(&text[TEXT_INSTALL_DOWNLOAD], staticBuf, "Downloading...");
-    C2D_TextParse(&text[TEXT_INSTALL_CHECKING_DOWNLOAD], staticBuf, "Checking downloaded file...");
+    C2D_TextParse(&text[TEXT_INSTALL_DOWNLOAD], staticBuf, "正在下载中...");
+    C2D_TextParse(&text[TEXT_INSTALL_CHECKING_DOWNLOAD], staticBuf, "正在检查下载的文件...");
     C2D_TextParse(&text[TEXT_INSTALL_ENTRY_DELETE], staticBuf, "Deleting from SD...");
 
     C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_THEMES], staticBuf, "Downloading theme list, please wait...");

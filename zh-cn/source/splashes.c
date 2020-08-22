@@ -65,7 +65,7 @@ void splash_install(Entry_s splash)
             if(config_buf[0xC] == 0)
             {
                 free(config_buf);
-                throw_error("WARNING: Splashes are disabled in Luma Config", ERROR_LEVEL_WARNING);
+                throw_error("警告：开机动画未在Luma3DS中启动。", ERROR_LEVEL_WARNING);
             }
         }
     }

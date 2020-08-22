@@ -81,7 +81,7 @@ void capture_cam_thread(void *arg)
         svcWaitSynchronizationN(&index, events, 3, false, U64_MAX);
         switch(index) {
             case 0:
-                DEBUG("Cancel event received\n");
+                DEBUG("已取消事件\n");
                 cancel = true;
                 break;
             case 1:
@@ -293,13 +293,13 @@ void update_qr(qr_data *data)
                 }
                 else
                 {
-                    throw_error("File downloaded isn't a zip.", ERROR_LEVEL_WARNING);
+                    throw_error("下载的文件不是压缩包。", ERROR_LEVEL_WARNING);
                 }
                 free(zip_buf);
             }
             else
             {
-                throw_error("Download failed.", ERROR_LEVEL_WARNING);
+                throw_error("下载失败。", ERROR_LEVEL_WARNING);
             }
 
             free(filename);
