@@ -34,8 +34,8 @@ include $(DEVKITARM)/3ds_rules
 
 # Your values.
 APP_TITLE           :=	Anemone3DS
-APP_DESCRIPTION     :=	A complete theming tool for the 3DS
-APP_AUTHOR          :=	Anemone3DS Team
+APP_DESCRIPTION     :=	3DS主题工具
+APP_AUTHOR          :=	Anemone3DS Team（Theopse Organization汉化）
 
 
 TARGET              :=	$(subst $e ,_,$(notdir $(APP_TITLE)))
