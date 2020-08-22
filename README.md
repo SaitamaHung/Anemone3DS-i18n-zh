@@ -1,6 +1,6 @@
 ![# Anemone3DS](https://github.com/astronautlevel2/Anemone3DS/blob/master/meta/banner.png)
 
-[zh-cn]()
+[zh-cn](https://github.com/Theopse/Anemone3DS-i18n-zh/tree/Experimental/zh-cn)
 
 A Theme and Splashscreen Manager for the Nintendo 3DS, written in C.
 
