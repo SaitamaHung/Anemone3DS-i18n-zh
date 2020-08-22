@@ -1,8 +1,6 @@
 ![# Anemone3DS](https://github.com/astronautlevel2/Anemone3DS/blob/master/meta/banner.png)
 
-[zh-cn]()
-
-A Theme and Splashscreen Manager for the Nintendo 3DS, written in C.
+一个用C语言写的3DS主题及开机画面管理器。
 
 To-do list here: https://trello.com/b/F1YSa1VK
 
