@@ -86,8 +86,10 @@ void parse_smdh(Icon_s *icon, Entry_s * entry, const u16 * fallback_name)
     if(icon == NULL)
     {
         memcpy(entry->name, fallback_name, 0x80);
-        utf8_to_utf16(entry->desc, (u8*)"No description", 0x100);
-        utf8_to_utf16(entry->author, (u8*)"Unknown author", 0x80);
+        //utf8_to_utf16(entry->desc, (u8*)"No description", 0x100);
+        utf8_to_utf16(entry->desc, (u8*)"无描述", 0x100);
+        //utf8_to_utf16(entry->author, (u8*)"Unknown author", 0x80);
+        utf8_to_utf16(entry->author, (u8*)"未知作者", 0x80);
         entry->placeholder_color = C2D_Color32(rand() % 255, rand() % 255, rand() % 255, 255);
         return;
     }
@@ -174,7 +176,7 @@ Result load_entries(const char * loading_path, Entry_List_s * list)
     Result res = FSUSER_OpenDirectory(&dir_handle, ArchiveSD, fsMakePath(PATH_ASCII, loading_path));
     if(R_FAILED(res))
     {
-        DEBUG("Failed to open folder: %s\n", loading_path);
+        DEBUG("无法打开文件夹: %s\n", loading_path);
         return res;
     }
 
@@ -247,13 +249,13 @@ void load_icons_first(Entry_List_s * list, bool silent)
 
     if(list->entries_count <= list->entries_loaded*ICONS_OFFSET_AMOUNT)
     {
-        DEBUG("small load\n");
+        DEBUG("负荷\n");
         // if the list is one that doesnt need swapping, load everything at once
         endi = list->entries_count;
     }
     else
     {
-        DEBUG("extended load\n");
+        DEBUG("扩展负荷\n");
         // otherwise, load around to prepare for swapping
         starti = list->scroll - list->entries_loaded*ICONS_VISIBLE;
         endi = starti + list->entries_loaded*ICONS_OFFSET_AMOUNT;
@@ -464,7 +466,7 @@ bool load_preview_from_buffer(void * buf, u32 size, C2D_Image * preview_image, i
 {
     if(size < 8 || png_sig_cmp(buf, 0, 8))
     {
-        throw_error("Invalid preview.png", ERROR_LEVEL_WARNING);
+        throw_error("无效的 preview.png", ERROR_LEVEL_WARNING);
         return false;
     }
 
@@ -584,7 +586,7 @@ bool load_preview(Entry_List_s list, C2D_Image * preview_image, int * preview_of
     if(!size)
     {
         free(preview_buffer);
-        throw_error("No preview found.", ERROR_LEVEL_WARNING);
+        throw_error("没有找到预览", ERROR_LEVEL_WARNING);
         return false;
     }
 
@@ -614,7 +616,7 @@ Result load_audio(Entry_s entry, audio_s *audio)
     audio->filesize = load_data("/bgm.ogg", entry, &audio->filebuf);
     if (audio->filesize == 0) {
         free(audio);
-        DEBUG("<load_audio> File not found!\n");
+        DEBUG("<load_audio> 没有找到文件！\n");
         return MAKERESULT(RL_FATAL, RS_NOTFOUND, RM_APPLICATION, RD_NOT_FOUND);
     }
 
@@ -625,7 +627,7 @@ Result load_audio(Entry_s entry, audio_s *audio)
     ndspChnSetMix(0, audio->mix); // See mix comment above
 
     FILE *file = fmemopen(audio->filebuf, audio->filesize, "rb");
-    DEBUG("<load_audio> Filesize: %ld\n", audio->filesize);
+    DEBUG("<load_audio> 文件大小: %ld\n", audio->filesize);
     if(file != NULL) 
     {
         int e = ov_open(file, &audio->vf, NULL, 0);
@@ -641,10 +643,10 @@ Result load_audio(Entry_s entry, audio_s *audio)
         vorbis_info *vi = ov_info(&audio->vf, -1);
         ndspChnSetRate(0, vi->rate);// Set sample rate to what's read from the ogg file
         if (vi->channels == 2) {
-            DEBUG("<load_audio> Using stereo\n");
+            DEBUG("<load_audio> 使用立体声\n");
             ndspChnSetFormat(0, NDSP_FORMAT_STEREO_PCM16); // 2 channels == Stereo
         } else {
-            DEBUG("<load_audio> Invalid number of channels\n");
+            DEBUG("<load_audio> 无效的频道数\n");
             free(audio->filebuf);
             free(audio);
             fclose(file);
@@ -655,12 +657,12 @@ Result load_audio(Entry_s entry, audio_s *audio)
         audio->wave_buf[0].status = audio->wave_buf[1].status = NDSP_WBUF_DONE; // Used in play to stop from writing to current buffer
         audio->wave_buf[0].data_vaddr = linearAlloc(BUF_TO_READ); // Most vorbis packets should only be 4 KB at most (?) Possibly dangerous assumption
         audio->wave_buf[1].data_vaddr = linearAlloc(BUF_TO_READ);
-        DEBUG("<load_audio> Success!\n");
+        DEBUG("<load_audio> 成功！\n");
         return MAKERESULT(RL_SUCCESS, RS_SUCCESS, RM_APPLICATION, RD_SUCCESS);
     } else {
         free(audio->filebuf);
         free(audio);
-        DEBUG("<load_audio> fmemopen failed!\n");
+        DEBUG("<load_audio> fmemopen failed！\n");
         return MAKERESULT(RL_FATAL, RS_NOTFOUND, RM_APPLICATION, RD_NOT_FOUND);
     }
 }
