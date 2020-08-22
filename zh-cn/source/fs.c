@@ -143,7 +143,7 @@ static u32 zip_to_buf(struct archive *a, char *file_name, char ** buf)
     }
     else
     {
-        DEBUG("Couldn't find file in zip\n");
+        DEBUG("无法在压缩包内找到文件\n");
     }
 
     archive_read_free(a);
@@ -159,7 +159,8 @@ u32 zip_memory_to_buf(char *file_name, void * zip_memory, size_t zip_size, char 
     int r = archive_read_open_memory(a, zip_memory, zip_size);
     if(r != ARCHIVE_OK)
     {
-        DEBUG("Invalid zip being opened from memory\n");
+        //DEBUG("Invalid zip being opened from memory\n");
+        DEBUG("缓存中有无效的压缩包\n");
         return 0;
     }
 
@@ -179,7 +180,8 @@ u32 zip_file_to_buf(char *file_name, u16 *zip_path, char **buf)
     free(path);
     if(r != ARCHIVE_OK)
     {
-        DEBUG("Invalid zip being opened\n");
+        //DEBUG("Invalid zip being opened\n");
+        DEBUG("无效的压缩包\n");
         return 0;
     }
 
