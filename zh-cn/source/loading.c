@@ -633,7 +633,7 @@ Result load_audio(Entry_s entry, audio_s *audio)
         int e = ov_open(file, &audio->vf, NULL, 0);
         if (e < 0) 
         {
-            DEBUG("<load_audio> Vorbis: %d\n", e);
+            DEBUG("<load_audio> 音量: %d\n", e);
             free(audio->filebuf);
             free(audio);
             fclose(file);

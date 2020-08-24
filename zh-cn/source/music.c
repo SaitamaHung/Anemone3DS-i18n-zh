@@ -31,7 +31,7 @@
 Result update_audio(audio_s *audio) 
 {
     u32 size = audio->wave_buf[audio->buf_pos].nsamples * 4 - audio->data_read;
-    DEBUG("<update_audio> Audio Size: %ld\n", size);
+    DEBUG("<update_audio> 音频大小: %ld\n", size);
     if (audio->wave_buf[audio->buf_pos].status == NDSP_WBUF_DONE) // only run if the current selected buffer has already finished playing
     { 
         DEBUG("<update_audio> Attempting ov_read\n");

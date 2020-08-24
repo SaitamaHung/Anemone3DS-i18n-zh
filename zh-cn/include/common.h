@@ -36,7 +36,7 @@
 #include <string.h>
 
 #define DEBUG(...) fprintf(stderr, __VA_ARGS__)
-#define POS() DEBUG("%s (line %d)...\n", __func__, __LINE__)
+#define POS() DEBUG("%s (第%d排)...\n", __func__, __LINE__)
 
 #define DEBUGPOS(...) \
         POS(); \

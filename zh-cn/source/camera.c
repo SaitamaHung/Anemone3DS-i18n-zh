@@ -156,7 +156,7 @@ void update_ui(void *arg)
         C2D_DrawImageAt(data->image, 0.0f, 0.0f, 0.4f, NULL, 1.0f, 1.0f);
 
         set_screen(bottom);
-        draw_text_center(GFX_BOTTOM, 4, 0.5, 0.5, 0.5, colors[COLOR_WHITE], "Press \uE005 To Quit");
+        draw_text_center(GFX_BOTTOM, 4, 0.5, 0.5, 0.5, colors[COLOR_WHITE], "按 \uE005 退出");
         end_frame();
     }
     data->closed = true;
@@ -171,7 +171,7 @@ bool start_capture_cam(qr_data *data)
     if(threadCreate(capture_cam_thread, data, 0x10000, 0x1A, 1, true) == NULL)
     {
         throw_error("Capture cam thread creation failed\nPlease report this to the developers", ERROR_LEVEL_ERROR);
-        return false;
+        return false; 
     }
     svcWaitSynchronization(data->started, U64_MAX);
     if(threadCreate(update_ui, data, 0x10000, 0x1A, 1, true) == NULL)
@@ -288,7 +288,7 @@ void update_qr(qr_data *data)
                     }
                     else
                     {
-                        throw_error("Zip downloaded is neither\na splash nor a theme.", ERROR_LEVEL_WARNING);
+                        throw_error("下载的压缩包\n既不包含主题又不包含开机动画.", ERROR_LEVEL_WARNING);
                     }
                 }
                 else

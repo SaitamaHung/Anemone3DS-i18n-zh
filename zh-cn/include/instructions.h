@@ -76,7 +76,7 @@ Instructions_s normal_instructions[MODE_AMOUNT] = {
 };
 
 Instructions_s install_instructions = {
-    .info_line = "放开 \uE000 取消或按住 \uE006 并放开 \uE000 来安装",
+    .info_line = "松开 \uE000 取消或按住 \uE006 并放开 \uE000 来安装",
     .instructions = {
         {
             "\uE079 普通安装",
@@ -99,7 +99,7 @@ Instructions_s install_instructions = {
 
 Instructions_s extra_instructions[3] = {
     {
-        .info_line = "放开 \uE002 取消或按住 \uE006 并放开 \uE002 来安装",
+        .info_line = "松开 \uE002 取消或按住 \uE006 并放开 \uE002 来安装",
         .instructions = {
             {
                 "\uE079 按名称排序",
@@ -120,18 +120,18 @@ Instructions_s extra_instructions[3] = {
         }
     },
     {
-        .info_line = "Release \uE002 to cancel or hold \uE006 and release \uE002 to do stuff",
+        .info_line = "松开 \uE002 取消或按住 \uE006 并放开 \uE002 来执行",
         .instructions = {
             {
                 "\uE079 Jump in the list",
-                "\uE07A Reload broken icons"
+                "\uE07A 重新加载损坏的图标"
             },
             {
-                "\uE07B Browse ThemePlaza",
+                "\uE07B 浏览主题广场",
                 NULL,
             },
             {
-                "\uE004 Sorting menu",
+                "\uE004 排序菜单",
                 NULL
             },
             {

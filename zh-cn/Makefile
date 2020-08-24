@@ -70,8 +70,8 @@ PRODUCT_CODE        :=	CTR-P-ANEM
 ICON_FLAGS          :=	nosavebackups,visible
 
 ifeq ($(strip $(NOGIT)),)
-    # VERSION           :=  v2.1.0-Build 1 
-    VERSION           :=  Build 1.$(shell cat /dev/urandom | head -n 7 | md5sum | head -c 7)
+    # VERSION           :=  v2.1.0-Build 5
+    VERSION           :=  Build 5.$(shell cat /dev/urandom | head -n 7 | md5sum | head -c 7)
 
 	VERSION_MAJOR  := 2
 	VERSION_MINOR  := 1
