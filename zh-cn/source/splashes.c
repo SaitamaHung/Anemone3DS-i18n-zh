@@ -54,7 +54,7 @@ void splash_install(Entry_s splash)
 
     if(size == 0 && bottom_size == 0)
     {
-        throw_error("No splash.bin or splashbottom.bin found.\nIs this a splash?", ERROR_LEVEL_WARNING);
+        throw_error("未找到splash.bin或splashbottom.bin.\n请确定是否为开机动画", ERROR_LEVEL_WARNING);
     }
     else
     {

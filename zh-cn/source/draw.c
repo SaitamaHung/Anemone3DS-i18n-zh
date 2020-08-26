@@ -105,26 +105,26 @@ void init_screens(void)
 
     C2D_TextParse(&text[TEXT_CONFIRM_YES_NO], staticBuf, "\uE000 是   \uE001 否");
 
-    C2D_TextParse(&text[TEXT_INSTALL_LOADING_THEMES], staticBuf, "Loading themes, please wait...");
-    C2D_TextParse(&text[TEXT_INSTALL_LOADING_SPLASHES], staticBuf, "Loading splashes, please wait...");
-    C2D_TextParse(&text[TEXT_INSTALL_LOADING_ICONS], staticBuf, "Loading icons, please wait...");
+    C2D_TextParse(&text[TEXT_INSTALL_LOADING_THEMES], staticBuf, "正在读取主题列表中，请稍等...");
+    C2D_TextParse(&text[TEXT_INSTALL_LOADING_SPLASHES], staticBuf, "正在读取开机动画中，请稍等...");
+    C2D_TextParse(&text[TEXT_INSTALL_LOADING_ICONS], staticBuf, "正在读取图标中，请稍等...");
 
     C2D_TextParse(&text[TEXT_INSTALL_SPLASH], staticBuf, "正在安装开机动画中...");
     C2D_TextParse(&text[TEXT_INSTALL_SPLASH_DELETE], staticBuf, "正在删除开机动画中...");
 
     C2D_TextParse(&text[TEXT_INSTALL_SINGLE], staticBuf, "正在安装主题中...");
     C2D_TextParse(&text[TEXT_INSTALL_SHUFFLE], staticBuf, "正在安装随机主题组中...");
-    C2D_TextParse(&text[TEXT_INSTALL_BGM], staticBuf, "Installing BGM-only theme...");
-    C2D_TextParse(&text[TEXT_INSTALL_NO_BGM], staticBuf, "Installing theme without BGM...");
+    C2D_TextParse(&text[TEXT_INSTALL_BGM], staticBuf, "正在安装主题的BGM中...");
+    C2D_TextParse(&text[TEXT_INSTALL_NO_BGM], staticBuf, "正在安装主题图片中...");
 
     C2D_TextParse(&text[TEXT_INSTALL_DOWNLOAD], staticBuf, "正在下载中...");
     C2D_TextParse(&text[TEXT_INSTALL_CHECKING_DOWNLOAD], staticBuf, "正在检查下载的文件...");
-    C2D_TextParse(&text[TEXT_INSTALL_ENTRY_DELETE], staticBuf, "Deleting from SD...");
+    C2D_TextParse(&text[TEXT_INSTALL_ENTRY_DELETE], staticBuf, "正在从SD卡中删除中...");
 
-    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_THEMES], staticBuf, "Downloading theme list, please wait...");
-    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_SPLASHES], staticBuf, "Downloading splash list, please wait...");
-    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_PREVIEW], staticBuf, "Downloading preview, please wait...");
-    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_BGM], staticBuf, "Downloading BGM, please wait...");
+    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_THEMES], staticBuf, "正在下载主题列表中，请稍等...");
+    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_SPLASHES], staticBuf, "正在下载开机列表中，请稍等...");
+    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_PREVIEW], staticBuf, "正在下载预览中，请稍等...");
+    C2D_TextParse(&text[TEXT_INSTALL_LOADING_REMOTE_BGM], staticBuf, "正在下载BGM中，请稍等...");
 
     for(int i = 0; i < TEXT_AMOUNT; i++)
         C2D_TextOptimize(&text[i]);

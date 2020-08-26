@@ -35,19 +35,19 @@ static Instructions_s browser_instructions[MODE_AMOUNT] = {
         .info_line = NULL,
         .instructions = {
             {
-                "\uE000 Download theme",
-                "\uE001 Go back"
+                "\uE000 下载主题",
+                "\uE001 返回"
             },
             {
-                "\uE002 Hold for more",
-                "\uE003 Preview theme"
+                "\uE002 按住选择...",
+                "\uE003 预览"
             },
             {
-                "\uE004 Previous page",
-                "\uE005 Next page"
+                "\uE004 上一页",
+                "\uE005 下一页"
             },
             {
-                "Exit",
+                "退出",
                 NULL
             }
         }
@@ -56,19 +56,19 @@ static Instructions_s browser_instructions[MODE_AMOUNT] = {
         .info_line = NULL,
         .instructions = {
             {
-                "\uE000 Download splash",
-                "\uE001 Go back"
+                "\uE000 下载开机动画",
+                "\uE001 返回"
             },
             {
-                "\uE002 Hold for more",
-                "\uE003 Preview splash"
+                "\uE002 按住选择...",
+                "\uE003 预览"
             },
             {
-                "\uE004 Previous page",
-                "\uE005 Next page"
+                "\uE004 上一页",
+                "\uE005 下一页"
             },
             {
-                "Exit",
+                "退出",
                 NULL
             }
         }
@@ -76,22 +76,22 @@ static Instructions_s browser_instructions[MODE_AMOUNT] = {
 };
 
 static Instructions_s extra_instructions = {
-    .info_line = "Release \uE002 to cancel or hold \uE006 and release \uE002 to do stuff",
+    .info_line = "松开 \uE002 取消或按住 \uE006 并放开 \uE002 来执行",
     .instructions = {
         {
-            "\uE079 Jump to page",
-            "\uE07A Search tags"
+            "\uE079 跳转",
+            "\uE07A 搜索标签"
         },
         {
-            "\uE07B Toggle splash/theme",
-            "\uE07C Reload without cache"
+            "\uE07B 切换 开机动画/主题",
+            "\uE07C 重新加载"
         },
         {
             NULL,
             NULL
         },
         {
-            "Exit",
+            "退出",
             NULL
         }
     }
@@ -141,7 +141,7 @@ static C2D_Image * load_remote_smdh(Entry_s * entry, bool ignore_cache)
     Icon_s * smdh = (Icon_s *)smdh_buf;
 
     u16 fallback_name[0x81] = {0};
-    utf8_to_utf16(fallback_name, (u8*)"No name", 0x80);
+    utf8_to_utf16(fallback_name, (u8*)"没有名字", 0x80);
 
     parse_smdh(smdh, entry, fallback_name);
     C2D_Image * image = loadTextureIcon(smdh);
@@ -229,16 +229,16 @@ static void load_remote_list(Entry_List_s * list, json_int_t page, EntryMode mod
                 else if(json_is_array(value) && !strcmp(key, THEMEPLAZA_JSON_PAGE_IDS))
                     load_remote_entries(list, value, ignore_cache, loading_screen);
                 else if(json_is_string(value) && !strcmp(key, THEMEPLAZA_JSON_ERROR_MESSAGE) && !strcmp(json_string_value(value), THEMEPLAZA_JSON_ERROR_MESSAGE_NOT_FOUND))
-                    throw_error("No results for this search.", ERROR_LEVEL_WARNING);
+                    throw_error("没有搜索内容的结果", ERROR_LEVEL_WARNING);
             }
         }
         else
-            DEBUG("json error on line %d: %s\n", error.line, error.text);
+            DEBUG("JSON文件于 %d: %s 有错误\n", error.line, error.text);
 
         json_decref(root);
     }
     else
-        throw_error("Couldn't download ThemePlaza data.\nMake sure WiFi is on.", ERROR_LEVEL_WARNING);
+        throw_error("无法下载主题广场数据\n请确保无线网已打开", ERROR_LEVEL_WARNING);
 
     free(page_json);
 }
@@ -355,12 +355,12 @@ static SwkbdCallbackResult jump_menu_callback(void* page_number, const char** pp
     int typed_value = atoi(text);
     if(typed_value > *(json_int_t*)page_number)
     {
-        *ppMessage = "The new page has to be\nsmaller or equal to the\nnumber of pages!";
+        *ppMessage = "新页码过小\n或不是页码的数字！";
         return SWKBD_CALLBACK_CONTINUE;
     }
     else if(typed_value == 0)
     {
-        *ppMessage = "The new position has to\nbe positive!";
+        *ppMessage = "新的位置必须\nbe 是有效的！";
         return SWKBD_CALLBACK_CONTINUE;
     }
     return SWKBD_CALLBACK_OK;
@@ -381,11 +381,11 @@ static void jump_menu(Entry_List_s * list)
     sprintf(numbuf, "%"  JSON_INTEGER_FORMAT, list->tp_current_page);
     swkbdSetInitialText(&swkbd, numbuf);
 
-    sprintf(numbuf, "Which page do you want to jump to?");
+    sprintf(numbuf, "你想跳转到哪一页？");
     swkbdSetHintText(&swkbd, numbuf);
 
-    swkbdSetButton(&swkbd, SWKBD_BUTTON_LEFT, "Cance", false);
-    swkbdSetButton(&swkbd, SWKBD_BUTTON_RIGHT, "Jump", true);
+    swkbdSetButton(&swkbd, SWKBD_BUTTON_LEFT, "取消", false);
+    swkbdSetButton(&swkbd, SWKBD_BUTTON_RIGHT, "跳转", true);
     swkbdSetValidation(&swkbd, SWKBD_NOTEMPTY_NOTBLANK, 0, max_chars);
     swkbdSetFilterCallback(&swkbd, jump_menu_callback, &list->tp_page_count);
 
@@ -407,10 +407,10 @@ static void search_menu(Entry_List_s * list)
     SwkbdState swkbd;
 
     swkbdInit(&swkbd, SWKBD_TYPE_WESTERN, 2, max_chars);
-    swkbdSetHintText(&swkbd, "Which tags do you want to search for?");
+    swkbdSetHintText(&swkbd, "你想搜索什么标签？");
 
-    swkbdSetButton(&swkbd, SWKBD_BUTTON_LEFT, "Cance", false);
-    swkbdSetButton(&swkbd, SWKBD_BUTTON_RIGHT, "Search", true);
+    swkbdSetButton(&swkbd, SWKBD_BUTTON_LEFT, "取消", false);
+    swkbdSetButton(&swkbd, SWKBD_BUTTON_RIGHT, "搜索", true);
     swkbdSetValidation(&swkbd, SWKBD_NOTBLANK, 0, max_chars);
 
     SwkbdButton button = swkbdInputText(&swkbd, search, max_chars);
@@ -817,7 +817,7 @@ u32 http_get(const char *url, char ** filename, char ** buf, InstallType install
             free(content_disposition);
             free(new_url);
             free(*buf);
-            throw_error("Target is not valid!", ERROR_LEVEL_WARNING);
+            throw_error("目标无效！!", ERROR_LEVEL_WARNING);
             DEBUG("filename\n");
             return 0;
         }

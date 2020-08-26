@@ -170,7 +170,7 @@ bool start_capture_cam(qr_data *data)
     svcCreateMutex(&data->mutex, false);
     if(threadCreate(capture_cam_thread, data, 0x10000, 0x1A, 1, true) == NULL)
     {
-        throw_error("Capture cam thread creation failed\nPlease report this to the developers", ERROR_LEVEL_ERROR);
+        throw_error("捕获凸轮线程创建失败\n请将此信息报告给开发人员", ERROR_LEVEL_ERROR);
         return false; 
     }
     svcWaitSynchronization(data->started, U64_MAX);

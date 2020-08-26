@@ -46,13 +46,13 @@ static Result install_theme_internal(Entry_List_s themes, int installmode)
     {
         if(themes.shuffle_count < 2)
         {
-            DEBUG("not enough themes selected for shuffle\n");
+            DEBUG("没有足够的主题用于随机播放\n");
             return MAKERESULT(RL_USAGE, RS_INVALIDARG, RM_COMMON, RD_INVALID_SELECTION);
         }
 
         if(themes.shuffle_count > MAX_SHUFFLE_THEMES)
         {
-            DEBUG("too many themes selected for shuffle\n");
+            DEBUG("用于随机播放的主题过多\n");
             return MAKERESULT(RL_USAGE, RS_INVALIDARG, RM_COMMON, RD_INVALID_SELECTION);
         }
 
@@ -79,8 +79,8 @@ static Result install_theme_internal(Entry_List_s themes, int installmode)
                     if(body_size == 0)
                     {
                         free(body);
-                        DEBUG("body not found\n");
-                        throw_error("No body_LZ.bin found - is this a theme?", ERROR_LEVEL_WARNING);
+                        DEBUG("没找到\"body\"文件\n");
+                        throw_error("没有找到 body_LZ.bin - 确定是个主题么？", ERROR_LEVEL_WARNING);
                         return MAKERESULT(RL_PERMANENT, RS_CANCELED, RM_APPLICATION, RD_NOT_FOUND);
                     }
 
@@ -113,7 +113,7 @@ static Result install_theme_internal(Entry_List_s themes, int installmode)
                         if(music_size > BGM_MAX_SIZE)
                         {
                             free(music);
-                            DEBUG("bgm too big\n");
+                            DEBUG("音频文件过大\n");
                             return MAKERESULT(RL_PERMANENT, RS_CANCELED, RM_APPLICATION, RD_TOO_LARGE);
                         }
                     }
@@ -170,8 +170,8 @@ static Result install_theme_internal(Entry_List_s themes, int installmode)
             if(body_size == 0)
             {
                 free(body);
-                DEBUG("body not found\n");
-                throw_error("No body_LZ.bin found - is this a theme?", ERROR_LEVEL_WARNING);
+                DEBUG("没找到\"body\"文件\n");
+                throw_error("没有找到 body_LZ.bin - 确定是个主题么？", ERROR_LEVEL_WARNING);
                 return MAKERESULT(RL_PERMANENT, RS_CANCELED, RM_APPLICATION, RD_NOT_FOUND);
             }
 
@@ -187,7 +187,7 @@ static Result install_theme_internal(Entry_List_s themes, int installmode)
             if (music_size > BGM_MAX_SIZE)
             {
                 free(music);
-                DEBUG("bgm too big\n");
+                DEBUG("音频文件过大\n");
                 return MAKERESULT(RL_PERMANENT, RS_CANCELED, RM_APPLICATION, RD_TOO_LARGE);
             }
 

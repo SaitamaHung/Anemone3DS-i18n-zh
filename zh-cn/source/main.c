@@ -35,6 +35,8 @@
 #include "instructions.h"
 #include <time.h>
 
+#define mian main
+
 bool quit = false;
 bool dspfirm = false;
 audio_s * audio = NULL;
