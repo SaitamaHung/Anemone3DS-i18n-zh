@@ -83,7 +83,7 @@ void init_screens(void)
     C2D_TextParse(&text[TEXT_NO_THEME_FOUND], staticBuf, "无主題");
     C2D_TextParse(&text[TEXT_NO_SPLASH_FOUND], staticBuf, "无開机動画");
 
-    C2D_TextParse(&text[TEXT_DOWNLOAD_FROM_QR], staticBuf, "按 \uE005 通過二維碼安装");
+    C2D_TextParse(&text[TEXT_DOWNLOAD_FROM_QR], staticBuf, "按 \uE005 通過 QR Code 安装");
 
     C2D_TextParse(&text[TEXT_SWITCH_TO_SPLASHES], staticBuf, "按 \uE004 切換到開机画面界面");
     C2D_TextParse(&text[TEXT_SWITCH_TO_THEMES], staticBuf, "按 \uE004 切換到主題界面");

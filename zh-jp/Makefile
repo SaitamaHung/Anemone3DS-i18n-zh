@@ -34,8 +34,8 @@ include $(DEVKITARM)/3ds_rules
 
 # Your values.
 APP_TITLE           :=	Anemone3DS
-APP_DESCRIPTION     :=	3DS主题工具
-APP_AUTHOR          :=	Anemone3DS Team（Theopse Organization）
+APP_DESCRIPTION     :=	3DS主題程式（日語漢字）
+APP_AUTHOR          :=	Anemone3DS Team（Theopse Organization漢化）
 
 
 TARGET              :=	$(subst $e ,_,$(notdir $(APP_TITLE)))
@@ -71,7 +71,7 @@ ICON_FLAGS          :=	nosavebackups,visible
 
 ifeq ($(strip $(NOGIT)),)
     # VERSION           :=  v2.1.0-Build 5
-    VERSION           :=  Build 5tw.$(shell cat /dev/urandom | head -n 7 | md5sum | head -c 7)
+    VERSION           :=  Build 7.$(shell cat /dev/urandom | head -n 7 | md5sum | head -c 7)
 
 	VERSION_MAJOR  := 2
 	VERSION_MINOR  := 1

@@ -56,9 +56,9 @@ dkms.conf
 *.smdh
 
 # Build files
-*/build/
-*/out/
-*/romfs/
+*/build/*
+*/out/*
+*/romfs/*
 
 # Sublime stuff
 .clang_complete
