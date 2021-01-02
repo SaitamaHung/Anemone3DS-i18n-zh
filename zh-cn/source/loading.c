@@ -98,7 +98,7 @@ void parse_smdh(Icon_s *icon, Entry_s * entry, const u16 * fallback_name)
     memcpy(entry->desc, icon->desc, 0x80*sizeof(u16));
     memcpy(entry->author, icon->author, 0x40*sizeof(u16));
 }
-
+/*
 static void parse_entry_smdh(Entry_s * entry, const u16 * fallback_name)
 {
     char *info_buffer = NULL;
@@ -114,6 +114,7 @@ static void parse_entry_smdh(Entry_s * entry, const u16 * fallback_name)
 
     parse_smdh(smdh, entry, fallback_name);
 }   
+*/
 
 static C2D_Image * load_entry_icon(Entry_s entry)
 {
@@ -122,7 +123,11 @@ static C2D_Image * load_entry_icon(Entry_s entry)
     if(!size) return NULL;
 
     Icon_s * smdh = (Icon_s *)info_buffer;
-    return loadTextureIcon(smdh);
+    C2D_Image* out = loadTextureIcon(smdh);
+    free(info_buffer);
+    return out;
+
+    //return loadTextureIcon(smdh);
 }
 
 typedef int (*sort_comparator)(const void *, const void *);
@@ -199,14 +204,20 @@ Result load_entries(const char * loading_path, Entry_List_s * list)
 
         if (!strcmp(dir_entry.shortExt, "ZIP"))
         {
+            /*
             u32 size = zip_file_to_buf("info.smdh", path, &buf);
             if (size == 0) continue;
+            */
+            zip_file_to_buf("info.smdh", path, &buf);
         }
         else
         {
             struacat(path, "/info.smdh");
-            u32 size = file_to_buf(fsMakePath(PATH_UTF16, path), ArchiveSD, &buf);
-            if (size == 0) continue;
+            //u32 size = file_to_buf(fsMakePath(PATH_UTF16, path), ArchiveSD, &buf);
+            //if (size == 0) continue;
+            file_to_buf(fsMakePath(PATH_UTF16, path), ArchiveSD, &buf);
+            memset(&path[len], 0, (0x106 - len) * sizeof(u16));
+
         }
 
         free(buf);
@@ -214,10 +225,15 @@ Result load_entries(const char * loading_path, Entry_List_s * list)
         Entry_s * new_list = realloc(list->entries, list->entries_count * sizeof(Entry_s));
         if(new_list == NULL)
         {
+            /*
             free(list->entries);
             list->entries = NULL;
             res = -1;
             DEBUG("break\n");
+            break;
+            */
+            list->entries_count--;
+            free(buf);
             break;
         }
         else
@@ -225,12 +241,16 @@ Result load_entries(const char * loading_path, Entry_List_s * list)
 
         Entry_s * current_entry = &(list->entries[list->entries_count-1]);
         memset(current_entry, 0, sizeof(Entry_s));
+        parse_smdh((Icon_s *)buf, current_entry, dir_entry.name);
+        free(buf);
 
-        struacat(current_entry->path, loading_path);
-        strucat(current_entry->path, dir_entry.name);
+        memcpy(current_entry->path, path, 0x106 * sizeof(u16));
+
+        //struacat(current_entry->path, loading_path);
+        //strucat(current_entry->path, dir_entry.name);
 
         current_entry->is_zip = !strcmp(dir_entry.shortExt, "ZIP");
-        parse_entry_smdh(current_entry, dir_entry.name);
+        //parse_entry_smdh(current_entry, dir_entry.name);
     }
 
     FSDIR_Close(dir_handle);
@@ -426,9 +446,12 @@ static bool load_icons(Entry_List_s * current_list, Handle mutex)
         int index = indexes[i];
 
         C2D_Image * image = icons[index];
-        C3D_TexDelete(image->tex);
-        free(image->tex);
-        free(image);
+        if (icons[index] != NULL) {
+            C3D_TexDelete(image->tex);
+            free(image->tex);
+            free(image);
+        }
+        
 
         icons[index] = load_entry_icon(*current_entry);
 
@@ -511,7 +534,7 @@ bool load_preview_from_buffer(void * buf, u32 size, C2D_Image * preview_image, i
     if(color_type == PNG_COLOR_TYPE_RGB ||
        color_type == PNG_COLOR_TYPE_GRAY ||
        color_type == PNG_COLOR_TYPE_PALETTE)
-        png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
+        png_set_add_alpha(png, 0xFF, PNG_FILLER_BEFORE);
 
     if(color_type == PNG_COLOR_TYPE_GRAY ||
        color_type == PNG_COLOR_TYPE_GRAY_ALPHA)

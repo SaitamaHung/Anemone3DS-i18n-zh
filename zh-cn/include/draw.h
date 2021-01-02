@@ -1,6 +1,6 @@
 /*
 *   This file is part of Anemone3DS
-*   Copyright (C) 2016-2018 Contributors in CONTRIBUTORS.md
+*   Copyright (C) 2016-2020 Contributors in CONTRIBUTORS.md
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,15 @@
 *         or requiring that modified versions of such material be marked in
 *         reasonable ways as different from the original version.
 */
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// This File is From Theopse (Self@theopse.org)
+// Licensed under GPL v3
+// File:	draw.h (Anemone3DS-i18n-zh/zh-cn/include/draw.h)
+// Content:	(None)
+// Copyright (c) 2020 Theopse Organization All rights reserved
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 
 #ifndef DRAW_H
 #define DRAW_H
@@ -55,6 +64,8 @@ typedef enum {
     INSTALL_LOADING_REMOTE_PREVIEW,
     INSTALL_LOADING_REMOTE_BGM,
 
+    INSTALL_DUMPING_THEME,
+
     INSTALL_NONE,
 } InstallType;
 
@@ -80,6 +91,8 @@ typedef enum {
     TEXT_INSTALL_LOADING_REMOTE_SPLASHES,
     TEXT_INSTALL_LOADING_REMOTE_PREVIEW,
     TEXT_INSTALL_LOADING_REMOTE_BGM,
+
+    TEXT_INSTALL_DUMPING_THEME,
 
     // Other text
     TEXT_VERSION,

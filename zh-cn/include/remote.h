@@ -31,7 +31,7 @@
 #include "draw.h"
 #include <ctype.h>
 
-#define THEMEPLAZA_BASE_URL "https://themeplaza.eu"
+#define THEMEPLAZA_BASE_URL "https://themeplaza.art"
 #define THEMEPLAZA_API_URL "/api/anemone/v1"
 #define THEMEPLAZA_BASE_API_URL THEMEPLAZA_BASE_URL  THEMEPLAZA_API_URL
 
@@ -52,6 +52,7 @@
 #define CACHE_PATH_FORMAT            "/3ds/"  APP_TITLE  "/cache/%"  JSON_INTEGER_FORMAT
 
 bool themeplaza_browser(EntryMode mode);
-u32 http_get(const char *url, char ** filename, char ** buf, InstallType install_type);
+//u32 http_get(const char *url, char ** filename, char ** buf, InstallType install_type);
+Result http_get(const char *url, char ** filename, char ** buf, u32 * size, InstallType install_type, const char * acceptable_mime_types);
 
 #endif

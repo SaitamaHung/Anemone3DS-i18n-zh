@@ -1,6 +1,6 @@
 /*
 *   This file is part of Anemone3DS
-*   Copyright (C) 2016-2018 Contributors in CONTRIBUTORS.md
+*   Copyright (C) 2016-2020 Contributors in CONTRIBUTORS.md
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -24,23 +24,48 @@
 *         reasonable ways as different from the original version.
 */
 
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// This File is From Theopse (Self@theopse.org)
+// Licensed under GPL v3
+// File:	camera.h (Anemone3DS-i18n-zh/zh-cn/include/camera.h)
+// Content:	(None)
+// Copyright (c) 2020 Theopse Organization All rights reserved
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 #ifndef CAMERA_H
 #define CAMERA_H
 
 #include "common.h"
 
 typedef struct {
-    u16 *camera_buffer;
-    C2D_Image image;
-    C3D_Tex *tex;
-    Handle mutex;
-    volatile bool finished;
-    volatile bool closed;
-    volatile bool success;
-    Handle cancel;
-    Handle started;
+    //C2D_Image image;
 
-    bool capturing;
+    //C3D_Tex *tex;
+    //Handle mutex;
+    //volatile bool finished;
+    //volatile bool closed;
+    //volatile bool success;
+    //Handle cancel;
+    //Handle started;
+
+    //bool capturing;
+    
+    u16* camera_buffer;
+
+    Handle event_stop;
+    Thread cam_thread, ui_thread;
+
+    LightEvent event_cam_info, event_ui_info;
+
+    CondVar cond;
+    LightLock mut;
+    u32 num_readers_active;
+    bool writer_waiting;
+    bool writer_active;
+
+    bool any_update;
+    
+    
     struct quirc* context;
 } qr_data;
 

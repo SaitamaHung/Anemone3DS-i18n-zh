@@ -128,7 +128,7 @@ Instructions_s extra_instructions[3] = {
             },
             {
                 "\uE07B 浏览主题广场",
-                NULL,
+                "\uE07C 导出当前主题"
             },
             {
                 "\uE004 排序菜单",
