@@ -69,3 +69,7 @@ dkms.conf
 .vscode/*
 
 .idea/*
+
+zh-cn/build/*
+zh-cn/out/*
+zh-cn/romfs/*

@@ -272,6 +272,7 @@ static void start_qr(qr_data *data)
     quirc_resize(data->context, 400, 240);
     data->camera_buffer = calloc(1, 400 * 240 * sizeof(u16));
 }
+
 static void exit_qr(qr_data *data)
 {
     svcSignalEvent(data->event_stop);

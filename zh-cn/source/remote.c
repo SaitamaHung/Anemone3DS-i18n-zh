@@ -99,11 +99,11 @@ static Instructions_s extra_instructions = {
 
 static void free_icons(Entry_List_s * list)
 {
-    if(list != NULL)
+    if (list != NULL)
     {
-        if(list->icons != NULL)
+        if (list->icons != NULL)
         {
-            for(int i = 0; i < list->entries_count; i++)
+            for (int i = 0; i < list->entries_count; i++)
             {
                 C3D_TexDelete(list->icons[i]->tex);
                 free(list->icons[i]->tex);
@@ -122,17 +122,23 @@ static C2D_Image * load_remote_smdh(Entry_s * entry, bool ignore_cache)
 
     not_cached = !smdh_size || ignore_cache;  // if the size is 0, the file wasn't there
 
-    if(not_cached)
+    if (not_cached)
     {
         free(smdh_buf);
         smdh_buf = NULL;
         char * api_url = NULL;
         asprintf(&api_url, THEMEPLAZA_SMDH_FORMAT, entry->tp_download_id);
-        smdh_size = http_get(api_url, NULL, &smdh_buf, INSTALL_NONE);
+        // smdh_size = http_get(api_url, NULL, &smdh_buf, INSTALL_NONE);
+        Result res = http_get(api_url, NULL, &smdh_buf, &smdh_size, INSTALL_NONE, "application/octet-stream");
+        if (R_FAILED(res))
+        {
+            free(smdh_buf);
+            return false;
+        }
         free(api_url);
     }
 
-    if(!smdh_size)
+    if (!smdh_size)
     {
         free(smdh_buf);
         smdh_buf = NULL;
@@ -140,16 +146,16 @@ static C2D_Image * load_remote_smdh(Entry_s * entry, bool ignore_cache)
 
     Icon_s * smdh = (Icon_s *)smdh_buf;
 
-    u16 fallback_name[0x81] = {0};
+    u16 fallback_name[0x81] = { 0 };
     utf8_to_utf16(fallback_name, (u8*)"没有名字", 0x80);
 
     parse_smdh(smdh, entry, fallback_name);
     C2D_Image * image = loadTextureIcon(smdh);
 
-    if(not_cached)
+    if (not_cached)
     {
         FSUSER_CreateDirectory(ArchiveSD, fsMakePath(PATH_UTF16, entry->path), FS_ATTRIBUTE_DIRECTORY);
-        u16 path[0x107] = {0};
+        u16 path[0x107] = { 0 };
         strucat(path, entry->path);
         struacat(path, "/info.smdh");
         remake_file(fsMakePath(PATH_UTF16, path), ArchiveSD, smdh_size);
@@ -205,10 +211,16 @@ static void load_remote_list(Entry_List_s * list, json_int_t page, EntryMode mod
     char * page_json = NULL;
     char * api_url = NULL;
     asprintf(&api_url, THEMEPLAZA_PAGE_FORMAT, page, mode+1, list->tp_search);
-    u32 json_len = http_get(api_url, NULL, &page_json, INSTALL_NONE);
+    u32 json_len; // = http_get(api_url, NULL, &page_json, INSTALL_NONE);
+    Result res = http_get(api_url, NULL, &page_json, &json_len, INSTALL_NONE, "application/json");
     free(api_url);
+    if (R_FAILED(res))
+    {
+        free(page_json);
+        return;
+    }
 
-    if(json_len)
+    if (json_len)
     {
         list->tp_current_page = page;
         list->mode = mode;
@@ -218,17 +230,18 @@ static void load_remote_list(Entry_List_s * list, json_int_t page, EntryMode mod
 
         json_error_t error;
         json_t *root = json_loadb(page_json, json_len, 0, &error);
-        if(root)
+        if (root)
         {
             const char *key;
             json_t *value;
             json_object_foreach(root, key, value)
             {
-                if(json_is_integer(value) && !strcmp(key, THEMEPLAZA_JSON_PAGE_COUNT))
+                if (json_is_integer(value) && !strcmp(key, THEMEPLAZA_JSON_PAGE_COUNT))
                     list->tp_page_count = json_integer_value(value);
-                else if(json_is_array(value) && !strcmp(key, THEMEPLAZA_JSON_PAGE_IDS))
+                else if (json_is_array(value) && !strcmp(key, THEMEPLAZA_JSON_PAGE_IDS))
                     load_remote_entries(list, value, ignore_cache, loading_screen);
-                else if(json_is_string(value) && !strcmp(key, THEMEPLAZA_JSON_ERROR_MESSAGE) && !strcmp(json_string_value(value), THEMEPLAZA_JSON_ERROR_MESSAGE_NOT_FOUND))
+                else if (json_is_string(value) && !strcmp(key, THEMEPLAZA_JSON_ERROR_MESSAGE) 
+                    && !strcmp(json_string_value(value), THEMEPLAZA_JSON_ERROR_MESSAGE_NOT_FOUND))
                     throw_error("没有搜索内容的结果", ERROR_LEVEL_WARNING);
             }
         }
@@ -244,6 +257,7 @@ static void load_remote_list(Entry_List_s * list, json_int_t page, EntryMode mod
 }
 
 static u16 previous_path_preview[0x106] = {0};
+
 static bool load_remote_preview(Entry_s * entry, C2D_Image* preview_image, int * preview_offset)
 {
     bool not_cached = true;
@@ -255,7 +269,7 @@ static bool load_remote_preview(Entry_s * entry, C2D_Image* preview_image, int *
 
     not_cached = !preview_size;
 
-    if(not_cached)
+    if (not_cached)
     {
         free(preview_png);
         preview_png = NULL;
@@ -265,11 +279,14 @@ static bool load_remote_preview(Entry_s * entry, C2D_Image* preview_image, int *
 
         draw_install(INSTALL_LOADING_REMOTE_PREVIEW);
 
-        preview_size = http_get(preview_url, NULL, &preview_png, INSTALL_LOADING_REMOTE_PREVIEW);
+        //preview_size = http_get(preview_url, NULL, &preview_png, INSTALL_LOADING_REMOTE_PREVIEW);
+        Result res = http_get(preview_url, NULL, &preview_png, &preview_size, INSTALL_LOADING_REMOTE_PREVIEW, "image/png");
         free(preview_url);
+        if (R_FAILED(res))
+            return false;
     }
 
-    if(!preview_size)
+    if (!preview_size)
     {
         free(preview_png);
         return false;
@@ -277,9 +294,9 @@ static bool load_remote_preview(Entry_s * entry, C2D_Image* preview_image, int *
 
     bool ret = load_preview_from_buffer(preview_png, preview_size, preview_image, preview_offset);
 
-    if(ret && not_cached) // only save the preview if it loaded correctly - isn't corrupted
+    if (ret && not_cached) // only save the preview if it loaded correctly - isn't corrupted
     {
-        u16 path[0x107] = {0};
+        u16 path[0x107] = { 0 };
         strucat(path, entry->path);
         struacat(path, "/preview.png");
         remake_file(fsMakePath(PATH_UTF16, path), ArchiveSD, preview_size);
@@ -291,15 +308,16 @@ static bool load_remote_preview(Entry_s * entry, C2D_Image* preview_image, int *
     return ret;
 }
 
-static u16 previous_path_bgm[0x106] = {0};
+static u16 previous_path_bgm[0x106] = { 0 };
+
 static void load_remote_bgm(Entry_s * entry)
 {
-    if(!memcmp(&previous_path_bgm, entry->path, 0x106*sizeof(u16))) return;
+    if (!memcmp(&previous_path_bgm, entry->path, 0x106 * sizeof(u16))) return;
 
     char * bgm_ogg = NULL;
     u32 bgm_size = load_data("/bgm.ogg", *entry, &bgm_ogg);
 
-    if(!bgm_size)
+    if (!bgm_size)
     {
         free(bgm_ogg);
         bgm_ogg = NULL;
@@ -309,16 +327,19 @@ static void load_remote_bgm(Entry_s * entry)
 
         draw_install(INSTALL_LOADING_REMOTE_BGM);
 
-        bgm_size = http_get(bgm_url, NULL, &bgm_ogg, INSTALL_LOADING_REMOTE_BGM);
+        //bgm_size = http_get(bgm_url, NULL, &bgm_ogg, INSTALL_LOADING_REMOTE_BGM);
+        Result res = http_get(bgm_url, NULL, &bgm_ogg, &bgm_size, INSTALL_LOADING_REMOTE_BGM, "application/ogg, audio/ogg");
         free(bgm_url);
+        if (R_FAILED(res))
+            return;
 
-        u16 path[0x107] = {0};
+        u16 path[0x107] = { 0 };
         strucat(path, entry->path);
         struacat(path, "/bgm.ogg");
         remake_file(fsMakePath(PATH_UTF16, path), ArchiveSD, bgm_size);
         buf_to_file(bgm_size, fsMakePath(PATH_UTF16, path), ArchiveSD, bgm_ogg);
 
-        memcpy(&previous_path_bgm, entry->path, 0x106*sizeof(u16));
+        memcpy(&previous_path_bgm, entry->path, 0x106 * sizeof(u16));
     }
 
     free(bgm_ogg);
@@ -332,10 +353,16 @@ static void download_remote_entry(Entry_s * entry, EntryMode mode)
     char * zip_buf = NULL;
     char * filename = NULL;
     draw_install(INSTALL_DOWNLOAD);
-    u32 zip_size = http_get(download_url, &filename, &zip_buf, INSTALL_DOWNLOAD);
+    u32 zip_size; // = http_get(download_url, &filename, &zip_buf, INSTALL_DOWNLOAD);
+    if(R_FAILED(http_get(download_url, &filename, &zip_buf, &zip_size, INSTALL_DOWNLOAD, "application/zip")))
+    {
+        free(download_url);
+        free(filename);
+        return;
+    }
     free(download_url);
 
-    char path_to_file[0x107] = {0};
+    char path_to_file[0x107] = { 0 };
     sprintf(path_to_file, "%s%s", main_paths[mode], filename);
     free(filename);
 
@@ -343,13 +370,14 @@ static void download_remote_entry(Entry_s * entry, EntryMode mode)
     if (extension == NULL || strcmp(extension, ".zip"))
         strcat(path_to_file, ".zip");
 
-    DEBUG("Saving to sd: %s\n", path_to_file);
+    DEBUG("Saving to SD: %s\n", path_to_file);
     remake_file(fsMakePath(PATH_ASCII, path_to_file), ArchiveSD, zip_size);
     buf_to_file(zip_size, fsMakePath(PATH_ASCII, path_to_file), ArchiveSD, zip_buf);
     free(zip_buf);
 }
 
-static SwkbdCallbackResult jump_menu_callback(void* page_number, const char** ppMessage, const char* text, size_t textlen)
+static SwkbdCallbackResult 
+jump_menu_callback(void * page_number, const char ** ppMessage, const char * text, size_t textlen)
 {
     (void)textlen;
     int typed_value = atoi(text);
@@ -374,11 +402,13 @@ static void jump_menu(Entry_List_s * list)
 
     SwkbdState swkbd;
 
-    sprintf(numbuf, "%"  JSON_INTEGER_FORMAT, list->tp_page_count);
+    sprintf(numbuf, "%"  
+    JSON_INTEGER_FORMAT, list->tp_page_count);
     int max_chars = strlen(numbuf);
     swkbdInit(&swkbd, SWKBD_TYPE_NUMPAD, 2, max_chars);
 
-    sprintf(numbuf, "%"  JSON_INTEGER_FORMAT, list->tp_current_page);
+    sprintf(numbuf, "%"  
+    JSON_INTEGER_FORMAT, list->tp_current_page);
     swkbdSetInitialText(&swkbd, numbuf);
 
     sprintf(numbuf, "你想跳转到哪一页？");
@@ -391,10 +421,10 @@ static void jump_menu(Entry_List_s * list)
 
     memset(numbuf, 0, sizeof(numbuf));
     SwkbdButton button = swkbdInputText(&swkbd, numbuf, sizeof(numbuf));
-    if(button == SWKBD_BUTTON_CONFIRM)
+    if (button == SWKBD_BUTTON_CONFIRM)
     {
         json_int_t newpage = (json_int_t)atoi(numbuf);
-        if(newpage != list->tp_current_page)
+        if (newpage != list->tp_current_page)
             load_remote_list(list, newpage, list->mode, false);
     }
 }
@@ -402,7 +432,7 @@ static void jump_menu(Entry_List_s * list)
 static void search_menu(Entry_List_s * list)
 {
     const int max_chars = 256;
-    char * search = calloc(max_chars+1, sizeof(char));
+    char * search = calloc(max_chars + 1, sizeof(char));
 
     SwkbdState swkbd;
 
@@ -437,17 +467,18 @@ static void change_selected(Entry_List_s * list, int change_value)
 
     int newval = list->selected_entry + change_value;
 
-    if(abs(change_value) == 1)
+    if (abs(change_value) == 1)
     {
-        if(newval < 0)
+        if (newval < 0)
             newval += list->entries_per_screen_h;
-        if(newval/list->entries_per_screen_h != list->selected_entry/list->entries_per_screen_h)
-            newval += list->entries_per_screen_h*(-change_value);
+        if (newval / list->entries_per_screen_h != list->selected_entry / list->entries_per_screen_h)
+            newval += list->entries_per_screen_h * (-change_value);
+        newval %= list->entries_count;
     }
     else
     {
-        if(newval < 0)
-            newval += list->entries_per_screen_h*list->entries_per_screen_v;
+        if (newval < 0)
+            newval += list->entries_per_screen_h * list->entries_per_screen_v;
         newval %= list->entries_count;
     }
     list->selected_entry = newval;
@@ -702,8 +733,8 @@ bool themeplaza_browser(EntryMode mode)
                         x /= current_list->entry_size;
                         y -= 24;
                         y /= current_list->entry_size;
-                        int new_selected = y*current_list->entries_per_screen_h + x;
-                        if(new_selected < current_list->entries_count)
+                        int new_selected = y * current_list->entries_per_screen_h + x;
+                        if (new_selected < current_list->entries_count)
                             current_list->selected_entry = new_selected;
                     }
                 }
@@ -720,6 +751,381 @@ bool themeplaza_browser(EntryMode mode)
     return downloaded;
 }
 
+
+typedef struct header
+{
+    char ** filename; // pointer to location for filename; if NULL, no filename is parsed
+    u32 file_size; // if == 0, fall back to chunked read
+    Result result_code;
+} header;
+
+typedef enum ParseResult
+{
+    SUCCESS, // 200/203 (203 indicates a successful request with a transformation applied by a proxy)
+    REDIRECT, // 301/302/303/307/308
+    HTTPC_ERROR,
+    ABORTED,
+    SERVER_IS_MISBEHAVING,
+    HTTP_UNAUTHORIZED = 401,
+    HTTP_FORBIDDEN = 403,
+    HTTP_NOT_FOUND = 404,
+    HTTP_UNACCEPTABLE = 406, // like 204, usually doesn't happen
+    HTTP_PROXY_UNAUTHORIZED = 407,
+    HTTP_GONE = 410,
+    HTTP_URI_TOO_LONG = 414,
+    HTTP_IM_A_TEAPOT = 418, // Note that a combined coffee/tea pot that is temporarily out of coffee should instead return 503.
+    HTTP_UPGRADE_REQUIRED = 426, // the 3DS doesn't support HTTP/2, so we can't upgrade - inform and return
+    HTTP_LEGAL_REASONS = 451,
+    HTTP_INTERNAL_SERVER_ERROR = 500,
+    HTTP_BAD_GATEWAY = 502,
+    HTTP_SERVICE_UNAVAILABLE = 503,
+    HTTP_GATEWAY_TIMEOUT = 504,
+} ParseResult;
+
+static SwkbdCallbackResult fat32filter(void *user, const char **ppMessage, const char *text, size_t textlen)
+{
+    (void)textlen;
+    (void)user;
+    *ppMessage = /*"Input must not contain:\n><\"?;:/\\+,.|[=]"*/ "不能输入以下字符：\n><\"?;:/\\+,.|[=]";
+    if(strpbrk(text, "><\"?;:/\\+,.|[=]"))
+    {
+        DEBUG(/*"illegal filename: %s\n"*/ "非法文件: %s\n", text);
+        return SWKBD_CALLBACK_CONTINUE;
+    }
+
+    return SWKBD_CALLBACK_OK;
+}
+
+// the good paths for this function return SUCCESS, ABORTED, or REDIRECT;
+// all other paths are failures
+static ParseResult parse_header(struct header * out, httpcContext * context, const char * mime)
+{
+    // status code
+    u32 status_code;
+
+    out->result_code = httpcGetResponseStatusCode(context, &status_code);
+    if (R_FAILED(out->result_code))
+    {
+        DEBUG("httpcGetResponseStatusCode\n");
+        return HTTPC_ERROR;
+    }
+
+    DEBUG("HTTP %lu\n", status_code);
+    switch (status_code)
+    {
+    case 301:
+    case 302:
+    case 307:
+    case 308:
+        return REDIRECT;
+    case 200:
+    case 203:
+        break;
+    default:
+        return (ParseResult)status_code;
+    }
+
+    char content_buf[1024] = {0};
+
+    // Content-Type
+
+    if (mime)
+    {
+        out->result_code = httpcGetResponseHeader(context, "Content-Type", content_buf, 1024);
+        if (R_FAILED(out->result_code))
+        {
+            return HTTPC_ERROR;
+        }
+
+        if (!strstr(mime, content_buf))
+        {
+            return SERVER_IS_MISBEHAVING;
+        }
+    }
+
+    // Content-Length
+
+    out->result_code = httpcGetDownloadSizeState(context, NULL, &out->file_size);
+    if (R_FAILED(out->result_code))
+    {
+        DEBUG("httpcGetDownloadSizeState\n");
+        return HTTPC_ERROR; // no need to free, program dies anyway
+    }
+
+    // Content-Disposition
+
+    if (out->filename)
+    {
+        out->result_code = httpcGetResponseHeader(context, "Content-Disposition", content_buf, 1024);
+        if (R_FAILED(out->result_code))
+        {
+            DEBUG("httpcGetResponseHeader\n");
+            return HTTPC_ERROR;
+        }
+
+        // content_buf: Content-Disposition: attachment; ... filename=<filename>;? ...
+
+        char * filename = strstr(content_buf, "filename="); // filename=<filename>;? ...
+        if (!filename)
+        {
+            const int max_chars = 250;
+            // needs to be heap allocated only because the call site is expected to free it
+            *out->filename = malloc(max_chars + 5); // + .zip and the null term
+
+            SwkbdState swkbd;
+
+            swkbdInit(&swkbd, SWKBD_TYPE_NORMAL, 2, max_chars / 2);
+            swkbdSetHintText(&swkbd, /*"Choose a filename"*/ "选择一个文件名");
+            swkbdSetFeatures(&swkbd, SWKBD_PREDICTIVE_INPUT | SWKBD_DARKEN_TOP_SCREEN);
+
+            swkbdSetButton(&swkbd, SWKBD_BUTTON_LEFT, /*"Cancel"*/ "取消", false);
+            swkbdSetButton(&swkbd, SWKBD_BUTTON_RIGHT, /*"Download"*/ "下载", true);
+            swkbdSetValidation(&swkbd, SWKBD_NOTEMPTY_NOTBLANK, SWKBD_FILTER_CALLBACK, -1);
+            swkbdSetFilterCallback(&swkbd, &fat32filter, NULL);
+
+            SwkbdButton button = swkbdInputText(&swkbd, *out->filename, max_chars);
+
+            if (button != SWKBD_BUTTON_CONFIRM)
+            {
+                out->result_code = swkbdGetResult(&swkbd);
+                return ABORTED;
+            }
+
+            strcat(*out->filename, ".zip");
+            return SUCCESS;
+        }
+
+        filename = strpbrk(filename, "=") + 1; // <filename>;?
+        char * end = strpbrk(filename, ";");
+        if (end)
+            *end = '\0'; // <filename>
+
+        if (filename[0] == '"')
+            // safe to assume the filename is quoted
+        {
+            filename[strlen(filename) - 1] = '\0';
+            filename++;
+        }
+
+        char * illegal_char;
+        // filter out characters illegal in FAT32 filenames
+        while ((illegal_char = strpbrk(filename, "><\"?;:/\\+,.|[=]")))
+            *illegal_char = '-';
+
+        *out->filename = malloc(strlen(filename) + 1);
+        strcpy(*out->filename, filename);
+    }
+    return SUCCESS;
+}
+
+#define ZIP_NOT_AVAILABLE /*"ZIP not found at this URL\nIf you believe this is an error, please\ncontact the site administrator"*/ "未找到ZIP文件\n如果你确定这是一个错误\n请联系网站管理员"
+
+/*
+ * call example: written = http_get("url", &filename, &buffer_to_download_to, &filesize, INSTALL_DOWNLOAD, "application/json");
+ */
+Result http_get(const char * url, char ** filename, char ** buf, u32 * size, InstallType install_type, const char * acceptable_mime_types)
+{
+    Result ret;
+    httpcContext context;
+    char redirect_url[0x824] = {0};
+    char new_url[0x824] = {0};
+
+    struct header _header = { .filename = filename };
+
+    DEBUG(/*"Original URL: %s\n"*/ "原始链接： %s\n", url);
+
+redirect: // goto here if we need to redirect
+    ret = httpcOpenContext(&context, HTTPC_METHOD_GET, url, 1);
+    if (R_FAILED(ret))
+    {
+        httpcCloseContext(&context);
+        DEBUG("httpcOpenContext %.8lx\n", ret);
+        return ret;
+    }
+
+    httpcSetSSLOpt(&context, SSLCOPT_DisableVerify); // should let us do https
+    httpcSetKeepAlive(&context, HTTPC_KEEPALIVE_ENABLED);
+    httpcAddRequestHeaderField(&context, "User-Agent", USER_AGENT);
+    httpcAddRequestHeaderField(&context, "Connection", "Keep-Alive");
+    if (acceptable_mime_types)
+        httpcAddRequestHeaderField(&context, "Accept", acceptable_mime_types);
+
+    ret = httpcBeginRequest(&context);
+    if (R_FAILED(ret))
+    {
+        httpcCloseContext(&context);
+        DEBUG("httpcBeginRequest %.8lx\n", ret);
+        return ret;
+    }
+
+#define ERROR_BUFFER_SIZE 0x70
+    char err_buf[ERROR_BUFFER_SIZE];
+    ParseResult parse = parse_header(&_header, &context, acceptable_mime_types);
+    switch (parse)
+    {
+    case SUCCESS:
+        break;
+    case ABORTED:
+        ret = httpcCloseContext(&context);
+        if(R_FAILED(ret))
+            return ret;
+        return MAKERESULT(RL_SUCCESS, RS_CANCELED, RM_APPLICATION, RD_CANCEL_REQUESTED);
+    case REDIRECT:
+        httpcGetResponseHeader(&context, "Location", redirect_url, 0x824);
+        httpcCloseContext(&context);
+        if (*redirect_url == '/') // if relative URL
+        {
+            strcpy(new_url, url);
+            char * last_slash = strchr(strchr(strchr(new_url, '/') + 1, '/') + 1, '/');
+            if (last_slash) *last_slash = '\0'; // prevents a NULL deref in case the original domain was not /-delimited
+            strncat(new_url, redirect_url, 0x824 - strlen(new_url));
+            url = new_url;
+        }
+        else
+        {
+            url = redirect_url;
+        }
+        DEBUG("HTTP Redirect: %s %s\n", new_url, *redirect_url == '/' ? "relative" : "absolute");
+        goto redirect;
+    case HTTP_UNACCEPTABLE:
+        DEBUG("HTTP 406 Unacceptable; Accept: %s\n", acceptable_mime_types);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, ZIP_NOT_AVAILABLE);
+        goto error;
+    case SERVER_IS_MISBEHAVING:
+        DEBUG("Server is misbehaving (provided resource with incorrect MIME)\n");
+        snprintf(err_buf, ERROR_BUFFER_SIZE, ZIP_NOT_AVAILABLE);
+        goto error;
+    case HTTPC_ERROR:
+        DEBUG("httpc error\n");
+        throw_error(/*"Error in HTTPC sysmodule.\nIf you are seeing this, please\ncontact an Anemone developer on\nthe ThemePlaza Discord."*/ "HTTPC模组错误\n请在ThemePlaza Discord上\n联系Anemone作者", ERROR_LEVEL_ERROR);
+        quit = true;
+        httpcCloseContext(&context);
+        return _header.result_code;
+    case HTTP_NOT_FOUND:
+    case HTTP_GONE: ;
+        const char * http_error = parse == HTTP_NOT_FOUND ? "404 Not Found" : "410 Gone";
+        DEBUG("HTTP %s; URL: %s\n", http_error, url);
+        if (strstr(url, THEMEPLAZA_BASE_URL) && parse == HTTP_NOT_FOUND)
+            snprintf(err_buf, ERROR_BUFFER_SIZE, /*"HTTP 404 Not Found\nHas this theme been approved?"*/ "HTTP 404 Not Found\n请确保主题有效");
+        else
+            snprintf(err_buf, ERROR_BUFFER_SIZE, /*"HTTP %s\nCheck that the URL is correct."*/ "HTTP %s\n请确保链接正确", http_error);
+        goto error;
+    case HTTP_UNAUTHORIZED:
+    case HTTP_FORBIDDEN:
+    case HTTP_PROXY_UNAUTHORIZED:
+        DEBUG("HTTP %u: device not authenticated\n", parse);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP %s\nContact the site administrator.", parse == HTTP_UNAUTHORIZED
+            ? "401 Unauthorized"
+            : parse == HTTP_FORBIDDEN
+            ? "403 Forbidden"
+            : "407 Proxy Authentication Required");
+        goto error;
+    case HTTP_URI_TOO_LONG:
+        DEBUG("HTTP 414; URL is too long, maybe too many redirects?\n");
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 414 URI Too Long\nThe QR code points to a really long URL.\nDownload the file directly.");
+        goto error;
+    case HTTP_IM_A_TEAPOT:
+        DEBUG("HTTP 418 I'm a teapot\n");
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 418 I'm a teapot\nContact the site administrator.");
+        goto error;
+    case HTTP_UPGRADE_REQUIRED:
+        DEBUG("HTTP 426; HTTP/2 required\n");
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 426 Upgrade Required\nThe 3DS cannot connect to this server.\nContact the site administrator.");
+        goto error;
+    case HTTP_LEGAL_REASONS:
+        DEBUG("HTTP 451; URL: %s\n", url);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 451 Unavailable for Legal Reasons\nSome entity is preventing access\nto the host server for legal reasons.");
+        goto error;
+    case HTTP_INTERNAL_SERVER_ERROR:
+        DEBUG("HTTP 500; URL: %s\n", url);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 500 Internal Server Error\nContact the site administrator.");
+        goto error;
+    case HTTP_BAD_GATEWAY:
+        DEBUG("HTTP 502; URL: %s\n", url);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 502 Bad Gateway\nContact the site administrator.");
+        goto error;
+    case HTTP_SERVICE_UNAVAILABLE:
+        DEBUG("HTTP 503; URL: %s\n", url);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 503 Service Unavailable\nContact the site administrator.");
+        goto error;
+    case HTTP_GATEWAY_TIMEOUT:
+        DEBUG("HTTP 504; URL: %s\n", url);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP 504 Gateway Timeout\nContact the site administrator.");
+        goto error;
+    default:
+        DEBUG("HTTP %u; URL: %s\n", parse, url);
+        snprintf(err_buf, ERROR_BUFFER_SIZE, "HTTP %u\nIf you believe this is unexpected, please\ncontact the site administrator.", parse);
+        goto error;
+    }
+
+    goto no_error;
+error:
+    throw_error(err_buf, ERROR_LEVEL_WARNING);
+    return httpcCloseContext(&context);
+no_error:;
+    u32 chunk_size;
+    if (_header.file_size)
+        // the only reason we chunk this at all is for the download bar;
+        // in terms of efficiency, allocating the full size
+        // would avoid 3 reallocs whenever the server isn't lying
+        chunk_size = _header.file_size / 4;
+    else
+        chunk_size = 0x80000;
+
+    *buf = NULL;
+    char * new_buf;
+    *size = 0;
+    u32 read_size = 0;
+
+    do
+    {
+        new_buf = realloc(*buf, *size + chunk_size);
+        if (new_buf == NULL)
+        {
+            httpcCloseContext(&context);
+            free(*buf);
+            DEBUG("realloc failed in http_get - file possibly too large?\n");
+            return MAKERESULT(RL_FATAL, RS_INTERNAL, RM_KERNEL, RD_OUT_OF_MEMORY);
+        }
+        *buf = new_buf;
+
+        // download exactly chunk_size bytes and toss them into buf.
+        // size contains the current offset into buf.
+        ret = httpcDownloadData(&context, (u8*)(*buf) + *size, chunk_size, &read_size);
+        /* FIXME: I have no idea why this doesn't work, but it causes problems. Look into it later
+        if (R_FAILED(ret))
+        {
+            httpcCloseContext(&context);
+            free(*buf);
+            DEBUG("download failed in http_get\n");
+            return ret;
+        }
+        */
+        *size += read_size;
+
+        if (_header.file_size && install_type != INSTALL_NONE)
+            draw_loading_bar(*size, _header.file_size, install_type);
+    } while (ret == (Result)HTTPC_RESULTCODE_DOWNLOADPENDING);
+    httpcCloseContext(&context);
+
+    // shrink to size
+    new_buf = realloc(*buf, *size);
+    if (new_buf == NULL)
+    {
+        httpcCloseContext(&context);
+        free(*buf);
+        DEBUG("shrinking realloc failed\n"); // 何？
+        return MAKERESULT(RL_FATAL, RS_INTERNAL, RM_KERNEL, RD_OUT_OF_MEMORY);
+    }
+    *buf = new_buf;
+
+    DEBUG("size: %lu\n", *size);
+    if (filename) { DEBUG("filename: %s\n", *filename); }
+    return MAKERESULT(RL_SUCCESS, RS_SUCCESS, RM_APPLICATION, RD_SUCCESS);
+}
+
+
+/*
 u32 http_get(const char *url, char ** filename, char ** buf, InstallType install_type)
 {
     Result ret;
@@ -889,3 +1295,4 @@ u32 http_get(const char *url, char ** filename, char ** buf, InstallType install
     DEBUG("size: %lu\n", size);
     return size;
 }
+*/

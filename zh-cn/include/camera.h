@@ -70,7 +70,7 @@ typedef struct {
 } qr_data;
 
 bool init_qr(void);
-void exit_qr(qr_data *data);
-void take_picture(void);
+/*void exit_qr(qr_data *data);
+void take_picture(void);*/
 
 #endif

@@ -322,7 +322,7 @@ dir_name_callback(void *data, const char ** ppMessage, const char * text, size_t
     (void)data;
     if(strpbrk(text, "><\"?;:/\\+,.|[=]"))
     {
-        *ppMessage = "Illegal character used.";
+        *ppMessage = /*"Illegal character used."*/ "使用了非法字符";
         return SWKBD_CALLBACK_CONTINUE;
     }
     return SWKBD_CALLBACK_OK;
@@ -336,7 +336,7 @@ Result dump_theme(void)
     SwkbdState swkbd;
 
     swkbdInit(&swkbd, SWKBD_TYPE_WESTERN, 2, max_chars);
-    swkbdSetHintText(&swkbd, "Name of output folder");
+    swkbdSetHintText(&swkbd, /*"Name of output folder"*/ "导出文件夹的名字");
 
     swkbdSetButton(&swkbd, SWKBD_BUTTON_LEFT, "Cancel", false);
     swkbdSetButton(&swkbd, SWKBD_BUTTON_RIGHT, "Done", true);
@@ -388,8 +388,8 @@ Result dump_theme(void)
     smdh_file[3] = 0x48;
 
     struacat((u16 *) (smdh_file + 0x8), output_dir);
-    struacat((u16 *) (smdh_file + 0x88), "No description");
-    struacat((u16 *) (smdh_file + 0x188), "Unknown Author");
+    struacat((u16 *) (smdh_file + 0x88), /*"No description"*/ "无描述");
+    struacat((u16 *) (smdh_file + 0x188), /*"Unknown Author"*/ "未知作者");
 
     free(output_dir);
 

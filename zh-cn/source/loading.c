@@ -212,6 +212,7 @@ Result load_entries(const char * loading_path, Entry_List_s * list)
         }
         else
         {
+            const ssize_t len = strulen(path, 0x106);
             struacat(path, "/info.smdh");
             //u32 size = file_to_buf(fsMakePath(PATH_UTF16, path), ArchiveSD, &buf);
             //if (size == 0) continue;
